@@ -1,0 +1,32 @@
+name: SBOM Generation and Scanning
+
+on: 
+  push:
+
+jobs:
+  generate-and-scan-sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk CLI
+        run: snyk auth ${{ secrets.SNYK_API_TOKEN }}
+
+      - name: Generate SBOM
+        run: |
+          sbom_filename="mySBOM_$(date +'%Y%m%d_%H%M%S')_${{ github.run_id }}.json"
+          snyk sbom --format=cyclonedx1.5+json --json-file-output ./sbom/$sbom_filename
+
+      - name: Download and Install bomber
+        run: |
+          wget https://github.com/devops-kung-fu/bomber/releases/latest/download/bomber_0.4.8_linux_amd64.deb -O bomber.deb
+          dpkg -i bomber.deb
+
+      - name: Scan SBOM with Bomber and Generate HTML Report
+        run: |
+          cd ./sbom
+          bomber scan $sbom_filename --output=html
