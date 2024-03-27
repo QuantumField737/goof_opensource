@@ -31,4 +31,5 @@ jobs:
 
       - name: Scan SBOM with Bomber and Generate HTML Report
         run: |
-          bomber scan ./sbom/$sbom_filename --output=html
+          cd ./sbom
+          bomber scan ./$sbom_filename --output=html
