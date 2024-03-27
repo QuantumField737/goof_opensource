@@ -6,6 +6,10 @@ jobs:
     steps:
       - uses: actions/checkout@master
 
+      # Install Snyk CLI
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
       # Authentication step
       - name: Authenticate with Snyk
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
