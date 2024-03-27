@@ -25,4 +25,4 @@ jobs:
           git config --local user.name "GitHub Action"
           git add sbom/mySBOM.json
           git commit -m "Generate SBOM file in sbom directory"
-          git push origin main
+          git push origin main  # Adjust this line if necessary
