@@ -30,6 +30,7 @@ jobs:
           if snyk test --severity-threshold=high; then
             echo "No high-severity vulnerabilities found."
           else
-            echo "High-severity vulnerabilities found. Failing the workflow."
+            echo "Danger: High-severity vulnerabilities found."
+            echo "Please review and address these issues."
             exit 1
           fi
