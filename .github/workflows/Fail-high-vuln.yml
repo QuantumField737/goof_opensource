@@ -12,11 +12,11 @@ jobs:
 
       # Authentication step
       - name: Authenticate with Snyk
-        run: snyk auth ${{ secrets.SNYK_TOKEN }}
+        run: snyk auth ${{SNYK_API_TOKEN }}
 
       - name: Run Snyk to check for vulnerabilities
         uses: snyk/actions/node@master
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN: ${{SNYK_API_TOKEN }}
         with:
           args: --severity-threshold=high
