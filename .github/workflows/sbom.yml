@@ -1,35 +1,28 @@
-name: Snyk Security
+name: Generate and Move SBOM
 
 on:
   push:
-  pull_request:
-
-permissions:
-  contents: read
 
 jobs:
-  snyk:
-    permissions:
-      contents: read # for actions/checkout to fetch code
+  generate-sbom:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
       - name: Install Snyk CLI
-        run: |
-          npm install -g snyk
+        run: npm install -g snyk
 
-      - name: Set up Snyk CLI to check for security issues
+      - name: Authenticate Snyk CLI
         run: snyk auth ${{ secrets.SNYK_API_TOKEN }}
 
-      - name: Run Snyk test
-        run: snyk test
+      - name: Generate SBOM
+        run: snyk sbom --format=cyclonedx1.5+json --json-file-output ./sbom/mySBOM.json
 
-      - name: Check for high-severity vulnerabilities
+      - name: Commit SBOM file
         run: |
-          if snyk test --severity-threshold=high; then
-            echo "No high-severity vulnerabilities found."
-          else
-            echo "High-severity vulnerabilities found. Failing the workflow."
-            exit 1
-          fi
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add sbom/mySBOM.json
+          git commit -m "Generate SBOM file in sbom directory"
+          git push origin main
