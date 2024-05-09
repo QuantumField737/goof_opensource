@@ -1,0 +1,21 @@
+name: OpenSSF Scorecards 
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  scorecard:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+      
+    - name: Setup Scorecards Action
+      uses: ossf/scorecard-action@v1
+      
+    - name: Run Scorecards Action
+      env:
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # Use your personal access token
+      run: scorecard run --output-format json --output-file scorecard_report.json
