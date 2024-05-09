@@ -6,16 +6,18 @@ on:
       - main
 
 jobs:
-  scorecard:
+  run-scorecard:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+
     steps:
-    - name: Checkout Repository
+    - name: Checkout code
       uses: actions/checkout@v2
-      
-    - name: Setup Scorecards Action
+
+    - name: Run Scorecard
       uses: ossf/scorecard-action@v1
-      
-    - name: Run Scorecards Action
-      env:
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }} # Use your personal access token
-      run: scorecard run --output-format json --output-file scorecard_report.json
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        repo: ${{ github.repository }}
