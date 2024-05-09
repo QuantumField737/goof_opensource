@@ -20,4 +20,3 @@ jobs:
       uses: ossf/scorecard-action@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        repo: ${{ github.repository }}
