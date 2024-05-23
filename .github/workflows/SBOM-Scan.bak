@@ -1,0 +1,26 @@
+name: SBOM Scanning
+
+on:
+  workflow_dispatch:
+
+jobs:
+  scan-sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+      - name: Download and Setup bomber
+        run: |
+          wget https://github.com/devops-kung-fu/bomber/releases/latest/download/bomber_0.4.8_linux_amd64.tar.gz -O bomber.tar.gz
+          tar -xzf bomber.tar.gz
+          chmod +x bomber
+          mv bomber /usr/local/bin/
+      - name: Find Latest SBOM File
+        id: find-sbom
+        run: |
+          latest_sbom=$(ls -Art sbom/*.json | tail -n 1)
+          echo "Latest SBOM file: $latest_sbom"
+          echo "::set-output name=latest_sbom_file::$latest_sbom"
+      - name: Scan SBOM with Bomber
+        run: |
+          bomber scan ${{ steps.find-sbom.outputs.latest_sbom_file }} --output=html

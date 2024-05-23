@@ -1,0 +1,29 @@
+name: Generate and Move SBOM
+
+on:
+  push:
+
+jobs:
+  generate-sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      - name: Authenticate Snyk CLI
+        run: snyk auth ${{ secrets.SNYK_API_TOKEN }}
+
+      - name: Generate SBOM
+        run: snyk sbom --format=cyclonedx1.5+json --json-file-output ./sbom/mySBOM_$(date +"%Y%m%d_%H%M%S")_${{ github.run_id }}.json
+
+      - name: Commit SBOM file
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add sbom/*.json
+          git commit -m "Generate SBOM file in sbom directory"
+          git pull origin main --rebase
+          git push origin main
